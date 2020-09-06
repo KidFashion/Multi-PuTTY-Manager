@@ -69,6 +69,17 @@ namespace SessionManagement
 				{
 					str = str + " -P " + this.session.sessionPort.ToString();
 				}
+
+				if (session.sessionUserName.Length > 0)
+				{
+					str = str + " -l " + session.sessionUserName;
+				}
+
+				if (session.sessionPassword.Length > 0)
+				{
+					str = str + " -pw " + session.sessionPassword;
+				}
+
 				this.info = new ProcessStartInfo(Global.strPuttyLocation);
 				this.info.Arguments = str + " " + this.session.sessionHost;
 				this.info.UseShellExecute = false;
@@ -100,24 +111,20 @@ namespace SessionManagement
 			{
 				this.autoThread = new Thread(delegate()
 				{
-					this.autoLoginAndCommands();
+					this.autoCommands();
 				});
 				this.autoThread.Start();
 			}
 		}
 
 		// Token: 0x060000B2 RID: 178 RVA: 0x0000A564 File Offset: 0x00008764
-		private void autoLoginAndCommands()
+		private void autoCommands()
 		{
 			try
 			{
 				if (this.session.sessionUserName != "" && this.session.sessionPassword != "")
 				{
 					Thread.Sleep(this.session.connectionTimeout);
-					this.runCommand(this.session.sessionUserName);
-					Thread.Sleep(this.session.usernameTimeout);
-					this.runCommand(this.session.sessionPassword);
-					Thread.Sleep(this.session.passwordTimeout);
 					if (this.session.postLogin)
 					{
 						for (int i = 0; i < this.session.postLoginCommands.Count; i++)
